@@ -85,9 +85,10 @@ void LBFGS::one_iteration()
 
   update_memory(x_old, g_old, x_, g_);
   if ((iprint_ > 0) && (iter_number_ % iprint_ == 0)){
-    cout << iter_number_ << " energy " << f_ 
-        << " rms " << rms_
-        << " stepsize " << stepsize << "\n";
+    cout << "lbgs: " << iter_number_ 
+      << " f " << f_ 
+      << " rms " << rms_
+      << " stepsize " << stepsize << "\n";
   }
   iter_number_ += 1;
 }
@@ -270,24 +271,4 @@ void LBFGS::set_H0(double H0)
     cout << "warning: setting H0 after the first iteration.\n";
   }
   H0_ = H0;
-}
-
-void LBFGS::set_tol(double tol)
-{
-  tol_ = tol;
-}
-
-void LBFGS::set_maxstep(double maxstep)
-{
-  maxstep_ = maxstep;
-}
-
-void LBFGS::set_max_f_rise(double max_f_rise)
-{
-  max_f_rise_ = max_f_rise;
-}
-
-void LBFGS::set_max_iter(int max_iter)
-{
-  maxiter_ = max_iter;
 }

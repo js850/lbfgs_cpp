@@ -27,16 +27,22 @@ int main(){
   x0[1] = 1.23;
   x0[2] = -5.03;
 
-
-  cout << "starting\n";
   LBFGS_ns::LBFGS lbfgs(&func2, &x0[0], N, M);
       //1e-4, .2, 1e-4, .1, 1000
       //);
   lbfgs.set_max_iter(30);
-  lbfgs.set_iprint(2);
+  lbfgs.set_iprint(1);
   lbfgs.run();
   //for (int i=0; i<30; ++i){
     //lbfgs.one_iteration();
   //}
+  
+  double const * x = lbfgs.get_x();
+  cout << "final result:\n";
+  cout << "x: " << x[0] << " " << x[1] << " " << x[2] << "\n";
+  cout << "f: " << lbfgs.get_f() << "\n";
+  cout << "rms: " << lbfgs.get_rms() << "\n";
+  cout << "nfev: " << lbfgs.get_nfev() << "\n";
+  cout << "success: " << lbfgs.success() << "\n";
 
 }

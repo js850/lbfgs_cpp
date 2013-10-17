@@ -80,11 +80,20 @@ namespace LBFGS_ns{
 
       // functions for setting the parameters
       void set_H0(double);
-      void set_tol(double);
-      void set_maxstep(double);
-      void set_max_f_rise(double);
-      void set_max_iter(int);
+      void set_tol(double tol) { tol_ = tol; }
+      void set_maxstep(double maxstep) { maxstep_ = maxstep; }
+      void set_max_f_rise(double max_f_rise) { max_f_rise_ = max_f_rise; }
+      void set_max_iter(int max_iter) { maxiter_ = max_iter; }
       void set_iprint(int iprint) { iprint_ = iprint; }
+
+      // functions for accessing the results
+      double const * get_x() { return &x_[0]; }
+      double const * get_g() { return &g_[0]; }
+      double get_f() { return f_; }
+      double get_rms() { return rms_; }
+      int get_nfev() { return nfev_; }
+      int get_niter() { return iter_number_; }
+      int success() { return stop_criterion_satisfied(); }
 
     private :
 
