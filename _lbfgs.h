@@ -8,26 +8,31 @@ using std::vector;
 namespace LBFGS_ns{
   class LBFGS{
     private : 
+      // input parameters
+      /**
+       * A pointer to the function that computes the function and gradient
+       */
       double (* func_f_grad_)(double *, double *, int);
 
-      int M_; /**< The lenth of the LBFGS memory */
       int N_; /**< The number of elements in the search space */
-      int k_; /**< Counter for how many times the memory has been updated */
-      int maxiter_; /**< The maximum number of iterations */
+      int M_; /**< The lenth of the LBFGS memory */
       double tol_; /**< The tolerance for the rms gradient */
       double maxstep_; /**< The maximum step size */
-      int nfev_; /**< The number of function evaluations */
       double max_f_rise_; /**< The maximum the function is allowed to rise in a
                            * given step.  This is the criterion for the
                            * backtracking line search.
                            */
+      int maxiter_; /**< The maximum number of iterations */
+
       int iter_number_; /**< The current iteration number */
+      int nfev_; /**< The number of function evaluations */
 
       // variables representing the state of the system
       std::vector<double> x_;
       double f_;
       std::vector<double> g_;
       double rms_;
+      int k_; /**< Counter for how many times the memory has been updated */
 
       // places to store the lbfgs memory
       std::vector<vector<double> > s_;
@@ -42,8 +47,17 @@ namespace LBFGS_ns{
       /**
        * Constructor
        */
-      LBFGS(double (*func)(double *, double *, int),
-          double const * x0, int N, int M);
+      LBFGS(
+          double (*func)(double *, double *, int), 
+          double const * x0, 
+          int N, 
+          int M,
+          double tol,
+          double maxstep,
+          double max_f_rise,
+          double H0,
+          int maxiter
+          );
 
       /**
        * Destructor

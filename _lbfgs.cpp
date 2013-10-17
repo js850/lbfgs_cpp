@@ -25,17 +25,35 @@ double vecnorm(std::vector<double> const v, size_t N)
   return sqrt(vecdot(v, v, N));
 }
 
-LBFGS::LBFGS(double (*func)(double *, double *, int), double const * x0, int N, int M)
+LBFGS::LBFGS(
+    double (*func)(double *, double *, int), 
+    double const * x0, 
+    int N, 
+    int M,
+    double tol,
+    double maxstep,
+    double max_f_rise,
+    double H0,
+    int maxiter
+    )
+  :
+    func_f_grad_(func),
+    N_(N),
+    M_(M),
+    tol_(tol),
+    maxstep_(maxstep),
+    max_f_rise_(max_f_rise),
+    maxiter_(maxiter)
 {
-  func_f_grad_ = func;
-  M_ = M;
-  N_ = N;
+  //func_f_grad_ = func;
   // these should be passed
-  maxiter_ = 100;
-  H0_ = 0.1;
-  tol_ = 1e-4;
-  maxstep_ = 0.2;
-  max_f_rise_ = 1e-4;
+  //maxiter_ = 100;
+  //H0_ = 0.1;
+  //tol_ = 1e-4;
+  //maxstep_ = 0.2;
+  //max_f_rise_ = 1e-4;
+
+  H0_ = H0;
 
   cout << std::setprecision(12);
 

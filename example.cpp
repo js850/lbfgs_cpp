@@ -29,7 +29,9 @@ int main(){
 
 
   cout << "starting\n";
-  LBFGS_ns::LBFGS lbfgs(&func2, &x0[0], N, M);
+  LBFGS_ns::LBFGS lbfgs(&func2, &x0[0], N, M,
+      1e-4, .2, 1e-4, .1, 1000
+      );
   lbfgs.run();
   //for (int i=0; i<30; ++i){
     //lbfgs.one_iteration();
