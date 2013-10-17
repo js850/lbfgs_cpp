@@ -33,6 +33,7 @@ int main(){
       //1e-4, .2, 1e-4, .1, 1000
       //);
   lbfgs.set_max_iter(30);
+  lbfgs.set_iprint(2);
   lbfgs.run();
   //for (int i=0; i<30; ++i){
     //lbfgs.one_iteration();

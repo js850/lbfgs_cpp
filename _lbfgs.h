@@ -1,5 +1,7 @@
+#ifndef __LBFGS_CPP__
+#define __LBFGS_CPP__
 /**
- * an implimentation of the LBFGS optimization algorithm in c++.  This
+ * an implementation of the LBFGS optimization algorithm in c++.  This
  * implemenation uses a backtracking linesearch.
  */
 #include <vector>
@@ -23,6 +25,7 @@ namespace LBFGS_ns{
                            * backtracking line search.
                            */
       int maxiter_; /**< The maximum number of iterations */
+      int iprint_;
 
       int iter_number_; /**< The current iteration number */
       int nfev_; /**< The number of function evaluations */
@@ -81,12 +84,13 @@ namespace LBFGS_ns{
       void set_maxstep(double);
       void set_max_f_rise(double);
       void set_max_iter(int);
+      void set_iprint(int iprint) { iprint_ = iprint; }
 
     private :
 
       /**
        * Add a step to the LBFGS Memory
-       * This updates s_, y_, rho_, and H0_
+       * This updates s_, y_, rho_, H0_, and k_
        */
       void update_memory(
           std::vector<double> & xold,
@@ -120,3 +124,5 @@ namespace LBFGS_ns{
 
   };
 }
+
+#endif

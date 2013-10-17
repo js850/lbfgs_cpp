@@ -44,6 +44,7 @@ LBFGS::LBFGS(
     maxstep_(0.2),
     max_f_rise_(1e-4),
     maxiter_(1000),
+    iprint_(-1),
     iter_number_(0),
     nfev_(0),
     H0_(0.1),
@@ -83,14 +84,18 @@ void LBFGS::one_iteration()
   double stepsize = backtracking_linesearch();
 
   update_memory(x_old, g_old, x_, g_);
-  cout << iter_number_ << " energy " << f_ 
-      << " rms " << rms_
-      << " stepsize " << stepsize << "\n";
+  if ((iprint_ > 0) && (iter_number_ % iprint_ == 0)){
+    cout << iter_number_ << " energy " << f_ 
+        << " rms " << rms_
+        << " stepsize " << stepsize << "\n";
+  }
   iter_number_ += 1;
 }
 
 void LBFGS::run()
 {
+  // iterate until the stop criterion is satisfied or maximum number of
+  // iterations is reached
   while (iter_number_ < maxiter_)
   {
     if (stop_criterion_satisfied()){
@@ -107,6 +112,8 @@ void LBFGS::update_memory(
           std::vector<double> & gnew
           )
 {
+  // update the lbfgs memory
+  // This updates s_, y_, rho_, and H0_, and k_
   int klocal = k_ % M_;
   for (int j2 = 0; j2 < N_; ++j2){ 
     y_[klocal][j2] = gnew[j2] - gold[j2];
@@ -135,6 +142,7 @@ void LBFGS::update_memory(
 //    << " rho[i] " << rho_[klocal] 
 //    << "\n";
 
+  // incriment k
   k_ += 1;
   
 }
