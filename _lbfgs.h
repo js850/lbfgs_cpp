@@ -32,13 +32,13 @@ namespace LBFGS_ns{
       double f_;
       std::vector<double> g_;
       double rms_;
-      int k_; /**< Counter for how many times the memory has been updated */
 
       // places to store the lbfgs memory
       std::vector<vector<double> > s_;
       std::vector<vector<double> > y_;
       std::vector<double> rho_;
       double H0_;
+      int k_; /**< Counter for how many times the memory has been updated */
 
       // 
       std::vector<double> step_;
@@ -51,13 +51,13 @@ namespace LBFGS_ns{
           double (*func)(double *, double *, int), 
           double const * x0, 
           int N, 
-          int M,
-          double tol,
-          double maxstep,
-          double max_f_rise,
-          double H0,
-          int maxiter
-          );
+          int M);
+          //double tol,
+          //double maxstep,
+          //double max_f_rise,
+          //double H0,
+          //int maxiter
+          //);
 
       /**
        * Destructor
@@ -74,6 +74,13 @@ namespace LBFGS_ns{
        * until the maximum number ofg iterations is reached
        */
       void run();
+
+      // functions for setting the parameters
+      void set_H0(double);
+      void set_tol(double);
+      void set_maxstep(double);
+      void set_max_f_rise(double);
+      void set_max_iter(int);
 
     private :
 

@@ -29,32 +29,27 @@ LBFGS::LBFGS(
     double (*func)(double *, double *, int), 
     double const * x0, 
     int N, 
-    int M,
-    double tol,
-    double maxstep,
-    double max_f_rise,
-    double H0,
-    int maxiter
+    int M
+    //double tol,
+    //double maxstep,
+    //double max_f_rise,
+    //double H0,
+    //int maxiter
     )
   :
     func_f_grad_(func),
     N_(N),
     M_(M),
-    tol_(tol),
-    maxstep_(maxstep),
-    max_f_rise_(max_f_rise),
-    maxiter_(maxiter)
+    tol_(1e-4),
+    maxstep_(0.2),
+    max_f_rise_(1e-4),
+    maxiter_(1000),
+    iter_number_(0),
+    nfev_(0),
+    H0_(0.1),
+    k_(0)
 {
-  //func_f_grad_ = func;
-  // these should be passed
-  //maxiter_ = 100;
-  //H0_ = 0.1;
-  //tol_ = 1e-4;
-  //maxstep_ = 0.2;
-  //max_f_rise_ = 1e-4;
-
-  H0_ = H0;
-
+  // set the precision of the printing
   cout << std::setprecision(12);
 
   // allocate arrays
@@ -65,11 +60,6 @@ LBFGS::LBFGS(
   s_ = std::vector<vector<double> >(M_, vector<double>(N_));
   rho_ = std::vector<double>(M_);
   step_ = std::vector<double>(N_);
-
-  // initialize parameters
-  k_ = 0;
-  nfev_ = 0;
-  iter_number_ = 0;
 
   // set up the current location
   for (int j2 = 0; j2 < N_; ++j2){ 
@@ -264,4 +254,32 @@ void LBFGS::compute_func_gradient(std::vector<double> & x, double & func,
 {
   nfev_ += 1;
   func = (*func_f_grad_)(&x[0], &gradient[0], N_);
+}
+
+void LBFGS::set_H0(double H0)
+{
+  if (iter_number_ > 0){
+    cout << "warning: setting H0 after the first iteration.\n";
+  }
+  H0_ = H0;
+}
+
+void LBFGS::set_tol(double tol)
+{
+  tol_ = tol;
+}
+
+void LBFGS::set_maxstep(double maxstep)
+{
+  maxstep_ = maxstep;
+}
+
+void LBFGS::set_max_f_rise(double max_f_rise)
+{
+  max_f_rise_ = max_f_rise;
+}
+
+void LBFGS::set_max_iter(int max_iter)
+{
+  maxiter_ = max_iter;
 }
