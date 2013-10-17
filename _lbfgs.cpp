@@ -9,17 +9,6 @@ using namespace LBFGS_ns;
 using std::vector;
 using std::cout;
 
-double func2(double const * x, double * g, double N)
-{
-  size_t i;
-  double dot = 0.;
-  for (i=0; i<N; ++i) {
-    dot += x[i] * x[i];
-    g[i] = 2. * x[i];
-  }
-  return dot;
-}
-
 double vecdot(std::vector<double> const v1, std::vector<double> const v2,
     size_t N)
 {
@@ -36,8 +25,9 @@ double vecnorm(std::vector<double> const v, size_t N)
   return sqrt(vecdot(v, v, N));
 }
 
-LBFGS::LBFGS(double const * x0, int N, int M)
+LBFGS::LBFGS(double (*func)(double *, double *, int), double const * x0, int N, int M)
 {
+  func_f_grad_ = func;
   M_ = M;
   N_ = N;
   // these should be passed
@@ -255,5 +245,5 @@ void LBFGS::compute_func_gradient(std::vector<double> & x, double & func,
       std::vector<double> & gradient)
 {
   nfev_ += 1;
-  func = func2(&x[0], &gradient[0], N_);
+  func = (*func_f_grad_)(&x[0], &gradient[0], N_);
 }
