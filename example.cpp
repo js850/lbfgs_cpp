@@ -1,5 +1,5 @@
 
-#include "_lbfgs_cpp.h"
+#include "_lbfgs.h"
 #include <vector>
 #include <iostream>
 
