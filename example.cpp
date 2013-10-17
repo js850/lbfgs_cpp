@@ -17,7 +17,6 @@ double func2(double * x, double * g, int N)
   return dot;
 }
 
-
 int main(){
   int N = 3;
   int M = 4;
@@ -28,14 +27,9 @@ int main(){
   x0[2] = -5.03;
 
   LBFGS_ns::LBFGS lbfgs(&func2, &x0[0], N, M);
-      //1e-4, .2, 1e-4, .1, 1000
-      //);
   lbfgs.set_max_iter(30);
   lbfgs.set_iprint(1);
   lbfgs.run();
-  //for (int i=0; i<30; ++i){
-    //lbfgs.one_iteration();
-  //}
   
   double const * x = lbfgs.get_x();
   cout << "final result:\n";

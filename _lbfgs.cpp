@@ -9,6 +9,9 @@ using namespace LBFGS_ns;
 using std::vector;
 using std::cout;
 
+/**
+ * compute the dot product of two vectors
+ */
 double vecdot(std::vector<double> const v1, std::vector<double> const v2,
     size_t N)
 {
@@ -20,6 +23,9 @@ double vecdot(std::vector<double> const v1, std::vector<double> const v2,
   return dot;
 }
 
+/**
+ * compute the L2 norm of a vector
+ */
 double vecnorm(std::vector<double> const v, size_t N)
 {
   return sqrt(vecdot(v, v, N));
