@@ -6,7 +6,7 @@
 using std::vector;
 using std::cout;
 
-double func2(double * x, double * g, int N)
+double func2(double * x, double * g, size_t N)
 {
   size_t i;
   double dot = 0.;

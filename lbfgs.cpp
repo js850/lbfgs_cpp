@@ -42,9 +42,9 @@ double vecnorm(std::vector<double> const v)
 }
 
 LBFGS::LBFGS(
-    double (*func)(double *, double *, int), 
+    double (*func)(double *, double *, size_t), 
     double const * x0, 
-    int N, 
+    size_t N, 
     int M
     //double tol,
     //double maxstep,
@@ -77,8 +77,7 @@ LBFGS::LBFGS(
   rho_ = std::vector<double>(M_);
   step_ = std::vector<double>(N);
 
-  // set up the current location
-  for (int j2 = 0; j2 < N; ++j2){ 
+  for (size_t j2 = 0; j2 < N; ++j2){
     x_[j2] = x0[j2];
   }
   compute_func_gradient(x_, f_, g_);
@@ -86,6 +85,9 @@ LBFGS::LBFGS(
 }
 
 
+/**
+ * Do one iteration iteration of the optimization algorithm
+ */
 void LBFGS::one_iteration()
 {
   std::vector<double> x_old = x_;

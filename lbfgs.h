@@ -7,12 +7,13 @@
  * ----------------------------------------------------------------------------
  */
 
-#ifndef __LBFGS_CPP__
-#define __LBFGS_CPP__
+#ifndef __LBFGS_H__
+#define __LBFGS_H__
 /**
  * an implementation of the LBFGS optimization algorithm in c++.  This
  * implemenation uses a backtracking linesearch.
  */
+#include <cstddef>
 #include <vector>
 
 using std::vector;
@@ -23,7 +24,7 @@ namespace LBFGS_ns{
       /**
        * A pointer to the function that computes the function and gradient
        */
-      double (* func_f_grad_)(double *, double *, int);
+      double (* func_f_grad_)(double *, double *, size_t);
 
       int M_; /**< The lenth of the LBFGS memory */
       double tol_; /**< The tolerance for the rms gradient */
@@ -59,9 +60,9 @@ namespace LBFGS_ns{
        * Constructor
        */
       LBFGS(
-          double (*func)(double *, double *, int), 
+          double (*func)(double *, double *, size_t), 
           double const * x0, 
-          int N, 
+          size_t N, 
           int M
           );
 
