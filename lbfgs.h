@@ -25,7 +25,6 @@ namespace LBFGS_ns{
        */
       double (* func_f_grad_)(double *, double *, int);
 
-      int N_; /**< The number of elements in the search space */
       int M_; /**< The lenth of the LBFGS memory */
       double tol_; /**< The tolerance for the rms gradient */
       double maxstep_; /**< The maximum step size */
@@ -63,18 +62,13 @@ namespace LBFGS_ns{
           double (*func)(double *, double *, int), 
           double const * x0, 
           int N, 
-          int M);
-          //double tol,
-          //double maxstep,
-          //double max_f_rise,
-          //double H0,
-          //int maxiter
-          //);
+          int M
+          );
 
       /**
        * Destructor
        */
-      ~LBFGS();
+      ~LBFGS() {}
 
       /**
        * Do one iteration iteration of the optimization algorithm
@@ -83,7 +77,7 @@ namespace LBFGS_ns{
 
       /**
        * Run the optimzation algorithm until the tolerance is satisfied or
-       * until the maximum number ofg iterations is reached
+       * until the maximum number of iterations is reached
        */
       void run();
 
@@ -100,9 +94,10 @@ namespace LBFGS_ns{
       double const * get_g() { return &g_[0]; }
       double get_f() { return f_; }
       double get_rms() { return rms_; }
+      double get_H0() { return H0_; }
       int get_nfev() { return nfev_; }
       int get_niter() { return iter_number_; }
-      int success() { return stop_criterion_satisfied(); }
+      bool success() { return stop_criterion_satisfied(); }
 
     private :
 
@@ -132,12 +127,12 @@ namespace LBFGS_ns{
       /**
        * Return true if the termination condition is satisfied, false otherwise
        */
-      int stop_criterion_satisfied();
+      bool stop_criterion_satisfied();
 
       /**
-       * Compute the energy and gradient of the objective function
+       * Compute the func and gradient of the objective function
        */
-      void compute_func_gradient(std::vector<double> & x, double & energy,
+      void compute_func_gradient(std::vector<double> & x, double & func,
           std::vector<double> & gradient);
 
   };

@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <iostream>
 #include <iomanip>
+#include <assert.h>
 
 using namespace LBFGS_ns;
 using std::vector;
@@ -21,12 +22,12 @@ using std::cout;
 /**
  * compute the dot product of two vectors
  */
-double vecdot(std::vector<double> const v1, std::vector<double> const v2,
-    size_t N)
+double vecdot(std::vector<double> const v1, std::vector<double> const v2)
 {
+  assert(v1.size() == v2.size());
   size_t i;
   double dot = 0.;
-  for (i=0; i<N; ++i) {
+  for (i=0; i<v1.size(); ++i) {
     dot += v1[i] * v2[i];
   }
   return dot;
@@ -35,9 +36,9 @@ double vecdot(std::vector<double> const v1, std::vector<double> const v2,
 /**
  * compute the L2 norm of a vector
  */
-double vecnorm(std::vector<double> const v, size_t N)
+double vecnorm(std::vector<double> const v)
 {
-  return sqrt(vecdot(v, v, N));
+  return sqrt(vecdot(v, v));
 }
 
 LBFGS::LBFGS(
@@ -53,7 +54,6 @@ LBFGS::LBFGS(
     )
   :
     func_f_grad_(func),
-    N_(N),
     M_(M),
     tol_(1e-4),
     maxstep_(0.2),
@@ -69,25 +69,22 @@ LBFGS::LBFGS(
   cout << std::setprecision(12);
 
   // allocate arrays
-  x_ = std::vector<double>(N_);
-  g_ = std::vector<double>(N_);
+  x_ = std::vector<double>(N);
+  g_ = std::vector<double>(N);
 
-  y_ = std::vector<vector<double> >(M_, vector<double>(N_));
-  s_ = std::vector<vector<double> >(M_, vector<double>(N_));
+  y_ = std::vector<vector<double> >(M_, vector<double>(N));
+  s_ = std::vector<vector<double> >(M_, vector<double>(N));
   rho_ = std::vector<double>(M_);
-  step_ = std::vector<double>(N_);
+  step_ = std::vector<double>(N);
 
   // set up the current location
-  for (int j2 = 0; j2 < N_; ++j2){ 
+  for (int j2 = 0; j2 < N; ++j2){ 
     x_[j2] = x0[j2];
   }
   compute_func_gradient(x_, f_, g_);
-  rms_ = vecnorm(g_, N_) / sqrt(N_);
+  rms_ = vecnorm(g_) / sqrt(N);
 }
 
-LBFGS::~LBFGS()
-{
-}
 
 void LBFGS::one_iteration()
 {
@@ -131,12 +128,12 @@ void LBFGS::update_memory(
   // update the lbfgs memory
   // This updates s_, y_, rho_, and H0_, and k_
   int klocal = k_ % M_;
-  for (int j2 = 0; j2 < N_; ++j2){ 
+  for (size_t j2 = 0; j2 < x_.size(); ++j2){
     y_[klocal][j2] = gnew[j2] - gold[j2];
     s_[klocal][j2] = xnew[j2] - xold[j2];
   }
 
-  double ys = vecdot(y_[klocal], s_[klocal], N_);
+  double ys = vecdot(y_[klocal], s_[klocal]);
   if (ys == 0.) {
     // should print a warning here
     cout << "warning: resetting YS to 1.\n";
@@ -145,7 +142,7 @@ void LBFGS::update_memory(
 
   rho_[klocal] = 1. / ys;
 
-  double yy = vecdot(y_[klocal], y_[klocal], N_);
+  double yy = vecdot(y_[klocal], y_[klocal]);
   if (yy == 0.) {
     // should print a warning here
     cout << "warning: resetting YY to 1.\n";
@@ -158,7 +155,7 @@ void LBFGS::update_memory(
 //    << " rho[i] " << rho_[klocal] 
 //    << "\n";
 
-  // incriment k
+  // increment k
   k_ += 1;
   
 }
@@ -166,9 +163,9 @@ void LBFGS::update_memory(
 void LBFGS::compute_lbfgs_step()
 {
   if (k_ == 0){ 
-    double gnorm = vecnorm(g_, N_);
+    double gnorm = vecnorm(g_);
     if (gnorm > 1.) gnorm = 1. / gnorm;
-    for (int j2 = 0; j2 < N_; ++j2){
+    for (size_t j2 = 0; j2 < x_.size(); ++j2){
       step_[j2] = - gnorm * H0_ * g_[j2];
     }
     return;
@@ -186,14 +183,14 @@ void LBFGS::compute_lbfgs_step()
   for (int j = jmax - 1; j >= jmin; --j){
     i = j % M_;
     //cout << "    i " << i << " j " << j << "\n";
-    alpha[i] = rho_[i] * vecdot(s_[i], step_, N_);
-    for (int j2 = 0; j2 < N_; ++j2){
+    alpha[i] = rho_[i] * vecdot(s_[i], step_);
+    for (size_t j2 = 0; j2 < step_.size(); ++j2){
       step_[j2] -= alpha[i] * y_[i][j2];
     }
   }
 
   // scale the step size by H0
-  for (int j2 = 0; j2 < N_; ++j2){
+  for (size_t j2 = 0; j2 < step_.size(); ++j2){
     step_[j2] *= H0_;
   }
 
@@ -201,14 +198,14 @@ void LBFGS::compute_lbfgs_step()
   for (int j = jmin; j < jmax; ++j){
     i = j % M_;
     //cout << "    i " << i << " j " << j << "\n";
-    beta = rho_[i] * vecdot(y_[i], step_, N_);
-    for (int j2 = 0; j2 < N_; ++j2){
+    beta = rho_[i] * vecdot(y_[i], step_);
+    for (size_t j2 = 0; j2 < step_.size(); ++j2){
       step_[j2] += s_[i][j2] * (alpha[i] - beta);
     }
   }
 
   // invert the step to point downhill
-  for (int j2 = 0; j2 < N_; ++j2){
+  for (size_t j2 = 0; j2 < x_.size(); ++j2){
     step_[j2] *= -1;
   }
 
@@ -216,20 +213,20 @@ void LBFGS::compute_lbfgs_step()
 
 double LBFGS::backtracking_linesearch()
 {
-  vector<double> xnew(N_);
-  vector<double> gnew(N_);
+  vector<double> xnew(x_.size());
+  vector<double> gnew(x_.size());
   double fnew;
 
   // if the step is pointing uphill, invert it
-  if (vecdot(step_, g_, N_) > 0.){
+  if (vecdot(step_, g_) > 0.){
     cout << "warning: step direction was uphill.  inverting\n";
-    for (int j2 = 0; j2 < N_; ++j2){
+    for (size_t j2 = 0; j2 < step_.size(); ++j2){
       step_[j2] *= -1;
     }
   }
 
   double factor = 1.;
-  double stepsize = vecnorm(step_, N_);
+  double stepsize = vecnorm(step_);
 
   // make sure the step is no larger than maxstep_
   if (factor * stepsize > maxstep_){
@@ -239,7 +236,7 @@ double LBFGS::backtracking_linesearch()
   int nred;
   int nred_max = 10;
   for (nred = 0; nred < nred_max; ++nred){
-    for (int j2 = 0; j2 < N_; ++j2){
+    for (size_t j2 = 0; j2 < xnew.size(); ++j2){
       xnew[j2] = x_[j2] + factor * step_[j2];
     }
     compute_func_gradient(xnew, fnew, gnew);
@@ -250,7 +247,7 @@ double LBFGS::backtracking_linesearch()
     } else {
       factor /= 10.;
       cout 
-        << "energy increased: " << df 
+        << "function increased: " << df 
         << " reducing step size to " << factor * stepsize 
         << " H0 " << H0_ << "\n";
     }
@@ -264,11 +261,11 @@ double LBFGS::backtracking_linesearch()
   x_ = xnew;
   g_ = gnew;
   f_ = fnew;
-  rms_ = vecnorm(gnew, N_) / sqrt(N_);
+  rms_ = vecnorm(gnew) / sqrt(gnew.size());
   return stepsize * factor;
 }
 
-int LBFGS::stop_criterion_satisfied()
+bool LBFGS::stop_criterion_satisfied()
 {
   return rms_ <= tol_;
 }
@@ -277,7 +274,7 @@ void LBFGS::compute_func_gradient(std::vector<double> & x, double & func,
       std::vector<double> & gradient)
 {
   nfev_ += 1;
-  func = (*func_f_grad_)(&x[0], &gradient[0], N_);
+  func = (*func_f_grad_)(&x[0], &gradient[0], x.size());
 }
 
 void LBFGS::set_H0(double H0)
